@@ -40,6 +40,17 @@ $tasks = [
         'status' => false
     ]
 ];
+
+function getProjectCount(array $task_list, $name_project) {
+    $count = 0;
+    foreach ($task_list as $task) {
+        if (isset($task['project']) && $task['project'] === $name_project) {
+            $count++;
+        }
+    }
+    return $count;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -84,7 +95,7 @@ $tasks = [
                     <?php foreach ($projects as $project): ?>
                         <li class="main-navigation__list-item">
                             <a class="main-navigation__list-item-link" href="#"><?=$project;?></a>
-                            <span class="main-navigation__list-item-count">0</span>
+                            <span class="main-navigation__list-item-count"><?=getProjectCount($tasks, $project) ?></span>
                         </li>
                     <?php endforeach; ?>
                     </ul>
@@ -138,19 +149,6 @@ $tasks = [
                         <td class="task__date"><?php if (isset($task['date'])): print($task['date']) ?><?php endif; ?></td>
                     </tr>
                 <?php endforeach; ?>
-                    <!--показывать следующий тег <tr/>, если переменная $show_complete_tasks равна единице-->
-                    <?php if ($show_complete_tasks === 1): ?>
-                    <tr class="tasks__item task task--completed">
-                        <td class="task__select">
-                            <label class="checkbox task__checkbox">
-                                <input class="checkbox__input visually-hidden" type="checkbox" checked>
-                                <span class="checkbox__text">Записаться на интенсив "Базовый PHP"</span>
-                            </label>
-                        </td>
-                        <td class="task__date">10.10.2019</td>
-                        <td class="task__controls"></td>
-                    </tr>
-                    <?php endif; ?>
                 </table>
             </main>
         </div>
