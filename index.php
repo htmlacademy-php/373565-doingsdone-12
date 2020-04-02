@@ -42,7 +42,8 @@ $tasks = [
 ]
 ];
 
-function countProjectTasks(array $task_list, $project_name) {
+function countProjectTasks(array $task_list, $project_name)
+{
     $count = 0;
     foreach ($task_list as $task) {
         if (isset($task['project']) && $task['project'] === $project_name) {
@@ -50,6 +51,15 @@ function countProjectTasks(array $task_list, $project_name) {
         }
     }
     return $count;
+}
+
+function isDateDiffLess ($date)
+{
+    $cur_date = strtotime(date('d.m.Y H:i:s'));
+    $task_date = strtotime($date);
+    $diff = floor(($task_date - $cur_date) / 3600);
+
+  return $diff <= 24;
 }
 
 $main_content = include_template('main.php', ['projects' => $projects, 'tasks' => $tasks, 'show_complete_tasks' => $show_complete_tasks]);
