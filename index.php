@@ -55,7 +55,7 @@ function countProjectTasks(array $task_list, $project_name)
 
 function isDateDiffLess ($date)
 {
-    $cur_date = strtotime(date('d.m.Y H:i:s'));
+    $cur_date = time();
     $task_date = strtotime($date);
     $diff = floor(($task_date - $cur_date) / 3600);
 
