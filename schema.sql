@@ -14,7 +14,7 @@ CREATE TABLE users (
 
 CREATE TABLE projects (
     id INT unsigned AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    name VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
     user_id INT unsigned NOT NULL
 );
 
@@ -32,3 +32,4 @@ CREATE TABLE tasks (
 CREATE INDEX status ON tasks(status);
 CREATE INDEX name ON tasks(name);
 CREATE INDEX date ON tasks(due_date);
+CREATE INDEX name ON projects(name);
