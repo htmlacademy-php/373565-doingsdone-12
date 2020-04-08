@@ -18,20 +18,21 @@ INSERT INTO tasks (status, name, due_date, user_id, project_id)
 /* Получаем список из всех проектов для одного пользователя*/
 /* По идентификатору */
 SELECT name FROM projects WHERE user_id = 1;
-/* По имени пользователя*/
-SELECT p.name, u.name FROM projects p JOIN users u ON u.id = p.user_id WHERE u.name = 'Ирина';
+/* По email пользователя*/
+SELECT p.name, u.email FROM projects p JOIN users u ON u.id = p.user_id WHERE u.email = '8129p@mail.ru';
 
 /* Получаем список из всех задач для одного проекта*/
 /* По идентификатору */
-SELECT name FROM tasks WHERE projects_id = 3
+SELECT name FROM tasks WHERE project_id = 3;
 /* По названию проекта для конкретного пользователя */
-SELECT p.name, t.name, u.name
+SELECT p.name, t.name, u.email
     FROM projects p
         JOIN tasks t ON p.id = t.project_id
-        JOIN users u ON u.id = t.user_id WHERE p.name = 'Домашние дела' AND u.name = 'Ирина';
+        JOIN users u ON u.id = t.user_id WHERE p.name = 'Домашние дела' AND u.email = '8129p@mail.ru';
 
 /*Помечаем задачу, как выполненную*/
-UPDATE tasks SET status = 1 WHERE name = 'Купить корм для кота';
+/* По идентификатору */
+UPDATE tasks SET status = 1 WHERE id = 6;
 
 /*Обновляем название задачи по её идентификатору*/
 UPDATE tasks SET name = 'Сделать уборку' WHERE id = 6;
