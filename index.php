@@ -2,7 +2,7 @@
 require_once 'helpers.php';
 
 $show_complete_tasks = rand(0, 1);
-$projects = ['Входящие', 'Учеба', 'Работа', 'Домашние дела', 'Авто'];
+/*$projects = ['Входящие', 'Учеба', 'Работа', 'Домашние дела', 'Авто'];
 $tasks = [
 [
 'title' => 'Собеседование в IT компании',
@@ -40,13 +40,13 @@ $tasks = [
 'project' => 'Домашние дела',
 'status' => false
 ]
-];
+];*/
 
-function countProjectTasks(array $task_list, $project_name)
+function countProjectTasks(array $task_list, $project_id)
 {
     $count = 0;
     foreach ($task_list as $task) {
-        if (isset($task['project']) && $task['project'] === $project_name) {
+        if (isset($task['project_id']) && $task['project_id'] === $project_id) {
             $count++;
         }
     }
@@ -62,7 +62,7 @@ function isDateDiffLess ($date)
   return $diff <= 24;
 }
 
-$main_content = include_template('main.php', ['projects' => $projects, 'tasks' => $tasks, 'show_complete_tasks' => $show_complete_tasks]);
+$main_content = include_template('main.php', [/*'projects' => $projects, 'tasks' => $tasks,*/ 'show_complete_tasks' => $show_complete_tasks]);
 
 $layout_content = include_template('layout.php', ['content' => $main_content, 'title' => 'Дела в порядке', 'user_name' => 'Константин']);
 

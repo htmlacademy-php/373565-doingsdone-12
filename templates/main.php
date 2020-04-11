@@ -1,3 +1,26 @@
+<?php
+    $con = mysqli_connect("localhost", "root", "", "doingsdone");
+
+    if (!$con) {
+        print('Ошибка подключения: ' . mysqli_connect_error());
+    }
+    else {
+        $sql = 'SELECT * FROM projects WHERE user_id = ?';
+        $stmt = mysqli_prepare($con, $sql);
+        mysqli_stmt_bind_param($stmt, 'i', $_GET['id']);
+        mysqli_stmt_execute($stmt);
+        $res = mysqli_stmt_get_result($stmt);
+        $projects = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+        $sql = 'SELECT * FROM tasks WHERE user_id = ?';
+        $stmt = mysqli_prepare($con, $sql);
+        mysqli_stmt_bind_param($stmt, 'i', $_GET['id']);
+        mysqli_stmt_execute($stmt);
+        $res = mysqli_stmt_get_result($stmt);
+        $tasks = mysqli_fetch_all($res, MYSQLI_ASSOC);
+    }
+?>
+
 <div class="content">
     <section class="content__side">
         <h2 class="content__side-heading">Проекты</h2>
@@ -6,8 +29,8 @@
             <ul class="main-navigation__list">
                 <?php foreach ($projects as $project): ?>
                 <li class="main-navigation__list-item">
-                    <a class="main-navigation__list-item-link" href="#"><?=htmlspecialchars($project); ?></a>
-                    <span class="main-navigation__list-item-count"><?=countProjectTasks($tasks, $project); ?></span>
+                    <a class="main-navigation__list-item-link" href="#"><?=htmlspecialchars($project['name']); ?></a>
+                    <span class="main-navigation__list-item-count"><?=countProjectTasks($tasks, $project['id']); ?></span>
                 </li>
                 <?php endforeach; ?>
             </ul>
@@ -44,12 +67,12 @@
             <?php foreach ($tasks as $task): ?>
                 <?php if (isset($task['status'])): ?>
                     <?php if ($show_complete_tasks === 0 && $task['status']): continue ?><?php endif; ?>
-                    <tr class="tasks__item task<?php if ($task['status']): ?> task--completed<?php endif ?><?php if (isset($task['date']) && isDateDiffLess($task['date'])): ?> task--important<?php endif; ?>">
+                    <tr class="tasks__item task<?php if ($task['status']): ?> task--completed<?php endif ?><?php if (isset($task['due_date']) && isDateDiffLess($task['due_date'])): ?> task--important<?php endif; ?>">
                 <?php endif; ?>
                 <td class="task__select">
                     <label class="checkbox task__checkbox">
                         <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1">
-                        <span class="checkbox__text"><?php if (isset($task['title'])): print(htmlspecialchars($task['title'])) ?><?php endif; ?></span>
+                        <span class="checkbox__text"><?php if (isset($task['name'])): print(htmlspecialchars($task['name'])) ?><?php endif; ?></span>
                     </label>
                 </td>
 
@@ -57,7 +80,7 @@
                     <a class="download-link" href="#">Home.psd</a>
                 </td>
 
-                <td class="task__date"><?php if (isset($task['date'])): print($task['date']) ?><?php endif; ?></td>
+                <td class="task__date"><?php if (isset($task['due_date'])): print(date('d.m.Y', strtotime($task['due_date']))) ?><?php endif; ?></td>
                 </tr>
             <?php endforeach; ?>
         </table>
