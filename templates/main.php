@@ -1,23 +1,42 @@
 <?php
     $con = mysqli_connect("localhost", "root", "", "doingsdone");
+    mysqli_set_charset($con, 'utf8');
 
     if (!$con) {
         print('Ошибка подключения: ' . mysqli_connect_error());
     }
     else {
+        $user_id = intval($_GET['id']);
         $sql = 'SELECT * FROM projects WHERE user_id = ?';
         $stmt = mysqli_prepare($con, $sql);
-        mysqli_stmt_bind_param($stmt, 'i', $_GET['id']);
+        mysqli_stmt_bind_param($stmt, 'i', $user_id);
         mysqli_stmt_execute($stmt);
         $res = mysqli_stmt_get_result($stmt);
         $projects = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
         $sql = 'SELECT * FROM tasks WHERE user_id = ?';
         $stmt = mysqli_prepare($con, $sql);
-        mysqli_stmt_bind_param($stmt, 'i', $_GET['id']);
+        mysqli_stmt_bind_param($stmt, 'i', $user_id);
         mysqli_stmt_execute($stmt);
         $res = mysqli_stmt_get_result($stmt);
-        $tasks = mysqli_fetch_all($res, MYSQLI_ASSOC);
+        $tasksAll = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+        if (isParamRequest('project_id')) {
+            $project_id = filter_input(INPUT_GET, 'project_id', FILTER_SANITIZE_NUMBER_INT);
+
+            if (!isValueInArray($projects, 'id', $project_id)) {
+                http_response_code(404);
+                exit();
+            }
+
+            $sql = 'SELECT * FROM tasks WHERE project_id = ' . $project_id . ' AND user_id = ' . $user_id;
+            $res = mysqli_query($con, $sql);
+            $tasks = mysqli_fetch_all($res, MYSQLI_ASSOC);
+        }
+
+        else {
+            $tasks = $tasksAll;
+        }
     }
 ?>
 
@@ -28,9 +47,9 @@
         <nav class="main-navigation">
             <ul class="main-navigation__list">
                 <?php foreach ($projects as $project): ?>
-                <li class="main-navigation__list-item">
-                    <a class="main-navigation__list-item-link" href="#"><?=htmlspecialchars($project['name']); ?></a>
-                    <span class="main-navigation__list-item-count"><?=countProjectTasks($tasks, $project['id']); ?></span>
+                <li class="main-navigation__list-item <?php if($_SERVER['REQUEST_URI'] === '/index.php?project_id=' . $project['id']): ?> main-navigation__list-item--active<?php endif; ?>">
+                    <a class="main-navigation__list-item-link" href="index.php?project_id=<?=$project['id'] ?>"><?=htmlspecialchars($project['name']); ?></a>
+                    <span class="main-navigation__list-item-count"><?=countProjectTasks($tasksAll, $project['id']); ?></span>
                 </li>
                 <?php endforeach; ?>
             </ul>

@@ -2,45 +2,6 @@
 require_once 'helpers.php';
 
 $show_complete_tasks = rand(0, 1);
-/*$projects = ['Входящие', 'Учеба', 'Работа', 'Домашние дела', 'Авто'];
-$tasks = [
-[
-'title' => 'Собеседование в IT компании',
-'date' => '01.12.2019',
-'project' => 'Работа',
-'status' => false
-],
-[
-'title' => 'Выполнить тестовое задание',
-'date' => '25.12.2019',
-'project' => 'Работа',
-'status' => false
-],
-[
-'title' => 'Сделать задание первого раздела',
-'date' => '21.12.2019',
-'project' => 'Учеба',
-'status' => true
-],
-[
-'title' => 'Встреча с другом',
-'date' => '22.12.2019',
-'project' => 'Входящие',
-'status' => false
-],
-[
-'title' => 'Купить корм для кота',
-'date' => null,
-'project' => 'Домашние дела',
-'status' => false
-],
-[
-'title' => 'Заказать пиццу',
-'date' => null,
-'project' => 'Домашние дела',
-'status' => false
-]
-];*/
 
 function countProjectTasks(array $task_list, $project_id)
 {
@@ -53,7 +14,7 @@ function countProjectTasks(array $task_list, $project_id)
     return $count;
 }
 
-function isDateDiffLess ($date)
+function isDateDiffLess($date)
 {
     $cur_date = time();
     $task_date = strtotime($date);
@@ -62,7 +23,24 @@ function isDateDiffLess ($date)
   return $diff <= 24;
 }
 
-$main_content = include_template('main.php', [/*'projects' => $projects, 'tasks' => $tasks,*/ 'show_complete_tasks' => $show_complete_tasks]);
+function isParamRequest($param_name)
+{
+    return isset($_GET['project_id']);
+}
+
+
+function isValueInArray($array, $key, $value)
+{
+    foreach ($array as $val) {
+        if ($val[$key] == $value) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+$main_content = include_template('main.php', ['show_complete_tasks' => $show_complete_tasks]);
 
 $layout_content = include_template('layout.php', ['content' => $main_content, 'title' => 'Дела в порядке', 'user_name' => 'Константин']);
 
