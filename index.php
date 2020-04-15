@@ -25,7 +25,7 @@ function isDateDiffLess($date)
 
 function isParamRequest($param_name)
 {
-    return isset($_GET['project_id']);
+    return isset($_GET[$param_name]);
 }
 
 

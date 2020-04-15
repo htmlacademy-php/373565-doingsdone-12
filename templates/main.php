@@ -29,8 +29,11 @@
                 exit();
             }
 
-            $sql = 'SELECT * FROM tasks WHERE project_id = ' . $project_id . ' AND user_id = ' . $user_id;
-            $res = mysqli_query($con, $sql);
+            $sql = 'SELECT * FROM tasks WHERE project_id = ? AND user_id = ?';
+            $stmt = mysqli_prepare($con, $sql);
+            mysqli_stmt_bind_param($stmt, 'ii', $project_id, $user_id);
+            mysqli_stmt_execute($stmt);
+            $res = mysqli_stmt_get_result($stmt);
             $tasks = mysqli_fetch_all($res, MYSQLI_ASSOC);
         }
 
