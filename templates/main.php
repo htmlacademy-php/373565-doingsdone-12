@@ -1,26 +1,3 @@
-<?php
-    $con = mysqli_connect("localhost", "root", "", "doingsdone");
-
-    if (!$con) {
-        print('Ошибка подключения: ' . mysqli_connect_error());
-    }
-    else {
-        $sql = 'SELECT * FROM projects WHERE user_id = ?';
-        $stmt = mysqli_prepare($con, $sql);
-        mysqli_stmt_bind_param($stmt, 'i', $_GET['id']);
-        mysqli_stmt_execute($stmt);
-        $res = mysqli_stmt_get_result($stmt);
-        $projects = mysqli_fetch_all($res, MYSQLI_ASSOC);
-
-        $sql = 'SELECT * FROM tasks WHERE user_id = ?';
-        $stmt = mysqli_prepare($con, $sql);
-        mysqli_stmt_bind_param($stmt, 'i', $_GET['id']);
-        mysqli_stmt_execute($stmt);
-        $res = mysqli_stmt_get_result($stmt);
-        $tasks = mysqli_fetch_all($res, MYSQLI_ASSOC);
-    }
-?>
-
 <div class="content">
     <section class="content__side">
         <h2 class="content__side-heading">Проекты</h2>
@@ -28,9 +5,9 @@
         <nav class="main-navigation">
             <ul class="main-navigation__list">
                 <?php foreach ($projects as $project): ?>
-                <li class="main-navigation__list-item">
-                    <a class="main-navigation__list-item-link" href="#"><?=htmlspecialchars($project['name']); ?></a>
-                    <span class="main-navigation__list-item-count"><?=countProjectTasks($tasks, $project['id']); ?></span>
+                <li class="main-navigation__list-item <?php if($_SERVER['REQUEST_URI'] === '/index.php?project_id=' . $project['id']): ?> main-navigation__list-item--active<?php endif; ?>">
+                    <a class="main-navigation__list-item-link" href="index.php?project_id=<?=$project['id'] ?>"><?=htmlspecialchars($project['name']); ?></a>
+                    <span class="main-navigation__list-item-count"><?=countProjectTasks($tasksAll, $project['id']); ?></span>
                 </li>
                 <?php endforeach; ?>
             </ul>

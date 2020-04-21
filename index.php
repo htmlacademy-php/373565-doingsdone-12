@@ -1,46 +1,12 @@
 <?php
 require_once 'helpers.php';
 
-$show_complete_tasks = rand(0, 1);
-/*$projects = ['Входящие', 'Учеба', 'Работа', 'Домашние дела', 'Авто'];
-$tasks = [
-[
-'title' => 'Собеседование в IT компании',
-'date' => '01.12.2019',
-'project' => 'Работа',
-'status' => false
-],
-[
-'title' => 'Выполнить тестовое задание',
-'date' => '25.12.2019',
-'project' => 'Работа',
-'status' => false
-],
-[
-'title' => 'Сделать задание первого раздела',
-'date' => '21.12.2019',
-'project' => 'Учеба',
-'status' => true
-],
-[
-'title' => 'Встреча с другом',
-'date' => '22.12.2019',
-'project' => 'Входящие',
-'status' => false
-],
-[
-'title' => 'Купить корм для кота',
-'date' => null,
-'project' => 'Домашние дела',
-'status' => false
-],
-[
-'title' => 'Заказать пиццу',
-'date' => null,
-'project' => 'Домашние дела',
-'status' => false
-]
-];*/
+$con = mysqli_connect("localhost", "root", "", "doingsdone");
+mysqli_set_charset($con, 'utf8');
+
+if (!$con) {
+    die('Ошибка подключения: ' . mysqli_connect_error());
+}
 
 function countProjectTasks(array $task_list, $project_id)
 {
@@ -53,7 +19,7 @@ function countProjectTasks(array $task_list, $project_id)
     return $count;
 }
 
-function isDateDiffLess ($date)
+function isDateDiffLess($date)
 {
     $cur_date = time();
     $task_date = strtotime($date);
@@ -62,7 +28,76 @@ function isDateDiffLess ($date)
   return $diff <= 24;
 }
 
-$main_content = include_template('main.php', [/*'projects' => $projects, 'tasks' => $tasks,*/ 'show_complete_tasks' => $show_complete_tasks]);
+function isValueInArray($array, $key, $value)
+{
+    foreach ($array as $val) {
+        if ($val[$key] == $value) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function getProjects ($con, int $user_id)
+{
+    $sql = 'SELECT * FROM projects WHERE user_id = ?';
+    $stmt = mysqli_prepare($con, $sql);
+    mysqli_stmt_bind_param($stmt, 'i', $user_id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $projects = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+    return $projects;
+}
+
+function getTasksAll ($con, int $user_id)
+{
+    $sql = 'SELECT * FROM tasks WHERE user_id = ?';
+    $stmt = mysqli_prepare($con, $sql);
+    mysqli_stmt_bind_param($stmt, 'i', $user_id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $tasksAll = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+    return $tasksAll;
+}
+
+function getTasks ($con, int $user_id, int $project_id=null)
+{
+    $parameters = [];
+    $sql = 'SELECT * FROM tasks WHERE user_id = ?';
+    $parameters[] = $user_id;
+    if (! is_null($project_id)) {
+        $sql .= " and project_id = ?";
+        $parameters[] = $project_id;
+    }
+
+    $stmt = db_get_prepare_stmt($con, $sql, $parameters);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $tasks = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+    return $tasks;
+}
+
+$user_id = 1;
+$project_id = null;
+$show_complete_tasks = rand(0, 1);
+$projects = getProjects($con, $user_id);
+
+if (isset($_GET['project_id']))
+{
+    $project_id = $_GET['project_id'];
+    if (!isValueInArray($projects, 'id', $project_id)) {
+        http_response_code(404);
+        exit();
+    }
+}
+
+$tasks = getTasks($con, $user_id, $project_id);
+$tasksAll = getTasksAll($con, $user_id);
+
+$main_content = include_template('main.php', ['show_complete_tasks' => $show_complete_tasks, 'projects' => $projects, 'tasks' => $tasks, 'tasksAll' => $tasksAll]);
 
 $layout_content = include_template('layout.php', ['content' => $main_content, 'title' => 'Дела в порядке', 'user_name' => 'Константин']);
 
