@@ -255,8 +255,8 @@ if (isset($_GET['project_id'])) {
 }
 
 /*формирование массивов задач*/
-$tasks = getTasks($con, $user_id, $project_id);
-$tasksAll = getTasksAll($con, $user_id);
+$tasks = array_reverse(getTasks($con, $user_id, $project_id));
+$tasksAll = array_reverse(getTasksAll($con, $user_id));
 
 
 /*шаблоны*/
