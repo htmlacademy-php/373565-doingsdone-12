@@ -1,10 +1,3 @@
-<?php
-/*проверка отправки формы*/
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    processingFormAddTask($con, $user_id, $errors);
- }
-?>
-
 <div class="content">
     <section class="content__side">
         <h2 class="content__side-heading">Проекты</h2>
@@ -26,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <main class="content__main">
         <h2 class="content__main-heading">Добавление задачи</h2>
 
-        <form class="form"  action="index.php?add" method="post" autocomplete="off" enctype="multipart/form-data">
+        <form class="form"  action="add.php" method="post" autocomplete="off" enctype="multipart/form-data">
             <div class="form__row">
                 <label class="form__label" for="name">Название <sup>*</sup></label>
 
@@ -73,6 +66,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <label class="button button--transparent" for="file">
                         <span>Выберите файл</span>
                     </label>
+
+                    <?php if(isset($errors['file'])): ?>
+                        <p class="form__message"><?=$errors['file'] ?></p>
+                    <?php endif; ?>
                 </div>
             </div>
 
