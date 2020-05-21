@@ -1,5 +1,5 @@
 <?php
-require_once 'index.php';
+require_once 'util.php';
 
 $errors = getErrors($projects);
 
@@ -27,7 +27,6 @@ function addTask ($con, int $user_id, string $task_name, int $project_id, string
     $stmt = db_get_prepare_stmt($con, $sql, $parameters);
     return mysqli_stmt_execute($stmt);
 }
-
 
 /*функция, возвращающая значение поля формы*/
 function getPostVal($name)
@@ -77,8 +76,8 @@ function validateDate()
 }
 
 /*функция для проверки ошибки загрузки файла*/
-function errorsFile () {
-    if ($_FILES['file']['error'] > 0) {
+function errorsFile ($name) {
+    if (isset ($_FILES[$name]) && $_FILES[$name]['error'] > 0) {
         return 'Ошибка загрузки файла';
     }
 }
@@ -119,7 +118,7 @@ function getErrors ($projects)
         },
 
         'file' => function() {
-            return errorsFile();
+            return errorsFile('file');
         }
 
     ];
@@ -162,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 /*подключение шаблона*/
-$add_content = include_template('add.php', ['projects' => $projects, 'tasksAll' => $tasksAll, 'con' => $con, 'user_id' => $user_id, 'errors' => $errors]);
+$add_content = include_template('add.php', ['projects' => $projects, 'tasksAll' => $tasksAll, 'errors' => $errors]);
 
 $layout_content = include_template('layout.php', ['content' => $add_content, 'title' => 'Дела в порядке', 'user_name' => 'Константин']);
 
