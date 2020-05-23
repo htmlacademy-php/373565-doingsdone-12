@@ -54,7 +54,9 @@
                 </td>
 
                 <td class="task__file">
-                    <a class="download-link" href="#">Home.psd</a>
+                    <?php if (isset($task['file_path'])): ?>
+                    <a class="download-link" href="<?=getUrl($task['file_path']); ?>"><?=htmlspecialchars(basename($task['file_path'])); ?></a>
+                    <?php endif; ?>
                 </td>
 
                 <td class="task__date"><?php if (isset($task['due_date'])): print(date('d.m.Y', strtotime($task['due_date']))) ?><?php endif; ?></td>
