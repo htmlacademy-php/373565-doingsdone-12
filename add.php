@@ -25,13 +25,7 @@ function addTask ($con, int $user_id, string $task_name, int $project_id, string
     $sql = substr($sql, 0, -2).')';
 
     $stmt = db_get_prepare_stmt($con, $sql, $parameters);
-    return mysqli_stmt_execute($stmt);
-}
-
-/*функция, возвращающая значение поля формы*/
-function getPostVal($name)
-{
-    return $_POST[$name] ?? '';
+    mysqli_stmt_execute($stmt);
 }
 
 /*функция, возвращающая имя файла из формы*/
@@ -39,14 +33,6 @@ function getFilesVal($name)
 {
     if (isset ($_FILES[$name])) {
         return $_FILES[$name]['name'] ?? '';
-    }
-}
-
-/*функция для проверки заполненности поля формы*/
-function validateFilled($name)
-{
-    if (empty($_POST[$name])) {
-        return 'Это поле должно быть заполнено';
     }
 }
 
@@ -80,15 +66,6 @@ function errorsFile ($name) {
     if (isset ($_FILES[$name]) && $_FILES[$name]['error'] > 0) {
         return 'Ошибка загрузки файла';
     }
-}
-
-/*функция, возвращающая класс для поля с ошибкой*/
-function getClassError ($errors, $name)
-{
-    if (isset($errors[$name])){
-        return 'form__input--error';
-    }
-    return '';
 }
 
 /*функция для добавления атрибута выбранному селекту*/

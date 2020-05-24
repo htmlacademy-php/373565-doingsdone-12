@@ -71,6 +71,29 @@ function getTasksAll($con, int $user_id)
     return $tasksAll;
 }
 
+/*функция, возвращающая значение поля формы*/
+function getPostVal($name)
+{
+    return $_POST[$name] ?? '';
+}
+
+/*функция для проверки заполненности поля формы*/
+function validateFilled($name)
+{
+    if (empty($_POST[$name])) {
+        return 'Это поле должно быть заполнено';
+    }
+}
+
+/*функция, возвращающая класс для поля с ошибкой*/
+function getClassError ($errors, $name)
+{
+    if (isset($errors[$name])){
+        return 'form__input--error';
+    }
+    return '';
+}
+
 /*объявление переменных*/
 $con = connect_db($params);
 $user_id = 1;
