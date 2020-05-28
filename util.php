@@ -71,6 +71,42 @@ function getTasksAll($con, int $user_id)
     return $tasksAll;
 }
 
+/*функция, возвращающая пользователя по email*/
+function getUser($con, $email)
+{
+    $sql = 'SELECT * FROM users WHERE email = ?';
+    $stmt = mysqli_prepare($con, $sql);
+    mysqli_stmt_bind_param($stmt, 's', $email);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $users = mysqli_fetch_all($res, MYSQLI_ASSOC);
+    $user = null;
+
+    foreach ($users as $us) {
+        $user = $us;
+    }
+
+    return $user;
+}
+
+/*функция, возвращающая имя пользователя по идентификатору*/
+function getUserName($con, $user_id)
+{
+    $sql = 'SELECT name FROM users WHERE id = ?';
+    $stmt = mysqli_prepare($con, $sql);
+    mysqli_stmt_bind_param($stmt, 'i', $user_id);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    $users = mysqli_fetch_all($res, MYSQLI_ASSOC);
+    $user_name = null;
+
+    foreach ($users as $user) {
+        $user_name = $user['name'];
+    }
+
+    return $user_name;
+}
+
 /*функция, возвращающая значение поля формы*/
 function getPostVal($name)
 {
@@ -94,8 +130,5 @@ function getClassError ($errors, $name)
     return '';
 }
 
-/*объявление переменных*/
+/*соединение с базой*/
 $con = connect_db($params);
-$user_id = 1;
-$projects = getProjects($con, $user_id);
-$tasksAll = array_reverse(getTasksAll($con, $user_id));

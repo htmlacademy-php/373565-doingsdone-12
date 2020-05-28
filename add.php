@@ -1,7 +1,16 @@
 <?php
 require_once 'util.php';
 
-$errors = getErrors($projects);
+session_start();
+
+/*объявление переменных*/
+if(isset($_SESSION['user'])) {
+    $user_id = $_SESSION['user'];
+    $projects = getProjects($con, $user_id);
+    $tasksAll = array_reverse(getTasksAll($con, $user_id));
+    $user_name = getUserName($con, $user_id);
+    $errors = getErrors($projects);
+}
 
 /*функция для добавления задачи в БД*/
 function addTask ($con, int $user_id, string $task_name, int $project_id, string $due_date, string $file_path) {
@@ -138,8 +147,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 /*подключение шаблона*/
-$add_content = include_template('add.php', ['projects' => $projects, 'tasksAll' => $tasksAll, 'errors' => $errors]);
+if (isset($_SESSION['user'])) {
+    $add_content = include_template('add.php', ['projects' => $projects, 'tasksAll' => $tasksAll, 'errors' => $errors]);
 
-$layout_content = include_template('layout.php', ['content' => $add_content, 'title' => 'Дела в порядке', 'user_name' => 'Константин']);
+    $layout_content = include_template('layout.php', ['content' => $add_content, 'title' => 'Дела в порядке', 'user_name' => $user_name]);
 
-print($layout_content);
+    print($layout_content);
+} else {
+    header('Location: index.php');
+    exit();
+}
+
+

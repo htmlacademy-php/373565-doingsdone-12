@@ -1,6 +1,8 @@
 <?php
 require_once 'util.php';
 
+session_start();
+
 /*функция, проверяющая, осталось ли до выполнения задачи менее суток*/
 function isDateDiffLess($date)
 {
@@ -39,9 +41,15 @@ function getTasks($con, int $user_id, int $project_id = null)
 /*объявление переменных*/
 $project_id = null;
 $show_complete_tasks = rand(0, 1);
+if(isset($_SESSION['user'])) {
+    $user_id = $_SESSION['user'];
+    $projects = getProjects($con, $user_id);
+    $tasksAll = array_reverse(getTasksAll($con, $user_id));
+    $user_name = getUserName($con, $user_id);
+}
 
 /*проверка выбранного id проекта в адресной строке*/
-if (isset($_GET['project_id'])) {
+if (isset($_SESSION['user']) && isset($_GET['project_id'])) {
     $project_id = $_GET['project_id'];
     if (!isValueInArray($projects, 'id', $project_id)) {
         http_response_code(404);
@@ -50,13 +58,19 @@ if (isset($_GET['project_id'])) {
 }
 
 /*формирование массива задач для конкретного пользователя и проекта*/
-$tasks = array_reverse(getTasks($con, $user_id, $project_id));
+if (isset($_SESSION['user'])) {
+    $tasks = array_reverse(getTasks($con, $user_id, $project_id));
+}
 
 /*подключение шаблона*/
-$main_content = include_template('main.php', ['show_complete_tasks' => $show_complete_tasks, 'projects' => $projects, 'tasks' => $tasks, 'tasksAll' => $tasksAll]);
+if (isset($_SESSION['user'])) {
+    $main_content = include_template('main.php', ['show_complete_tasks' => $show_complete_tasks, 'projects' => $projects, 'tasks' => $tasks, 'tasksAll' => $tasksAll]);
 
-$layout_content = include_template('layout.php', ['content' => $main_content, 'title' => 'Дела в порядке', 'user_name' => 'Константин']);
+    $layout_content = include_template('layout.php', ['content' => $main_content, 'title' => 'Дела в порядке', 'user_name' => $user_name]);
+} else {
+    $guest_content = include_template('guest.php');
+
+    $layout_content = include_template('layout.php', ['content' => $guest_content, 'title' => 'Дела в порядке']);
+}
 
 print($layout_content);
-
-
