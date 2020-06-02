@@ -15,7 +15,7 @@ function addUser ($con, string $email, string $name, string $password)
 /*функция для валидации email*/
 function validateEmail($con, $name)
 {
-    $email = $_POST[$name];
+    $email = getPostVal($name);
 
     if (empty($email)) {
         return 'Это поле должно быть заполнено';
@@ -25,22 +25,9 @@ function validateEmail($con, $name)
         return 'E-mail введён некорректно';
     }
 
-    if (count(getUserEmail($con, $email))) {
+    if (!empty(getUser($con, $email))) {
        return 'E-mail уже используется другим пользователем';
     }
-}
-
-/*функция, возвращающая пользователя по email*/
-function getUserEmail($con, $email)
-{
-    $sql = 'SELECT * FROM users WHERE email = ?';
-    $stmt = mysqli_prepare($con, $sql);
-    mysqli_stmt_bind_param($stmt, 's', $email);
-    mysqli_stmt_execute($stmt);
-    $res = mysqli_stmt_get_result($stmt);
-    $user = mysqli_fetch_all($res, MYSQLI_ASSOC);
-
-    return $user;
 }
 
 /*функция, возвращающая массив ошибок*/
@@ -83,6 +70,8 @@ function processingFormRegister ($con, $errors)
     if (!count($errors)) {
        $password = password_hash($password, PASSWORD_DEFAULT);
        addUser($con, $email, $user_name, $password);
+       session_start();
+       $_SESSION['user'] = getUser($con, $email)['id'];
        header('Location: index.php');
     }
 }
@@ -95,6 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 /*подключение шаблона*/
 $register_content = include_template('register.php', ['errors' => $errors]);
 
-$layout_content = include_template('layout.php', ['content' => $register_content, 'title' => 'Дела в порядке', 'user_name' => 'Константин']);
+$layout_content = include_template('layout.php', ['content' => $register_content, 'title' => 'Дела в порядке']);
 
 print($layout_content);
