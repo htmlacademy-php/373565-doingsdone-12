@@ -38,6 +38,20 @@ function getTasks($con, int $user_id, int $project_id = null)
     return $tasks;
 }
 
+/*функция, возвращающая массив найденных задач*/
+function getSearchTasks ($con, $search)
+{
+    $sql = 'SELECT * FROM tasks WHERE MATCH(name) AGAINST (? IN BOOLEAN MODE)';
+    $stmt = mysqli_prepare($con, $sql);
+    mysqli_stmt_bind_param($stmt, 's', $search);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+
+    $tasks = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+    return $tasks;
+}
+
 /*объявление переменных*/
 $project_id = null;
 $show_complete_tasks = rand(0, 1);
@@ -62,10 +76,18 @@ if (isset($_SESSION['user'])) {
     $tasks = array_reverse(getTasks($con, $user_id, $project_id));
 }
 
+/*проверка отправки запроса поиска задач*/
+if (isset($_GET['search'])) {
+    $search = trim(filter_input(INPUT_GET, 'search', FILTER_SANITIZE_SPECIAL_CHARS));
+
+    if (!empty($search)) {
+        $tasks = getSearchTasks($con, $search);
+    }
+}
+
 /*подключение шаблона*/
 if (isset($_SESSION['user'])) {
     $main_content = include_template('main.php', ['show_complete_tasks' => $show_complete_tasks, 'projects' => $projects, 'tasks' => $tasks, 'tasksAll' => $tasksAll]);
-
     $layout_content = include_template('layout.php', ['content' => $main_content, 'title' => 'Дела в порядке', 'user_name' => $user_name]);
 } else {
     $guest_content = include_template('guest.php');

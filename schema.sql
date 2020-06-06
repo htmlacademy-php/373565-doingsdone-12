@@ -33,3 +33,4 @@ CREATE INDEX status ON tasks(status);
 CREATE INDEX name ON tasks(name);
 CREATE INDEX date ON tasks(due_date);
 CREATE INDEX name ON projects(name);
+CREATE FULLTEXT INDEX name_search ON tasks(name);
