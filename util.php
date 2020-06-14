@@ -116,7 +116,7 @@ function getPostVal($name)
 /*функция для проверки заполненности поля формы*/
 function validateFilled($name)
 {
-    if (empty($_POST[$name])) {
+    if (empty(trim($_POST[$name]))) {
         return 'Это поле должно быть заполнено';
     }
 }

@@ -1,6 +1,6 @@
 /* Добавляем пользователей */
-INSERT INTO users (name, email, password) VALUES ('Ирина', '8129p@mail.ru', 'irina19'),
-                                                 ('Константин', 'kostya77@mail.ru', 'kos15');
+INSERT INTO users (name, email, password) VALUES ('Ирина', '8129p@mail.ru', '$2y$10$XI.pXeOFM6HnPdVBv0Yqd.489zxPqttvZUWFaodTE7VTbBH.Vp88i'),
+                                                 ('Константин', 'kostya77@mail.ru', '$2y$10$/s4MtAPcxLcxNnixhjOLpu.zDOAuqDH48aeKWuZUEp0tXPi/Zi.LW');
 
 /* Добавляем список проектов */
 INSERT INTO projects (name, user_id) VALUES ('Учеба', 1), ('Работа', 1), ('Домашние дела', 1),
