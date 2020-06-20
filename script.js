@@ -13,6 +13,13 @@ if ($checkbox.length) {
   });
 }
 
+function changeTask(value)
+{
+  var searchParams = new URLSearchParams(window.location.search);
+  searchParams.set('task_completed', value);
+  window.location = '/index.php?' + searchParams.toString();
+}
+
 flatpickr('#date', {
   enableTime: false,
   dateFormat: "Y-m-d",

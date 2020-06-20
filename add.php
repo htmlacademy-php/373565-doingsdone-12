@@ -43,6 +43,7 @@ function getFilesVal($name)
     if (isset ($_FILES[$name])) {
         return $_FILES[$name]['name'] ?? '';
     }
+    return "";
 }
 
 /*функция для валидации проекта*/
@@ -51,6 +52,7 @@ function validateRealProject($projects)
     if (!isValueInArray($projects, 'id', $_POST['project'])) {
         return 'Проект должен быть реально существующим';
     }
+    return "";
 }
 
 /*функция для валидации даты*/
@@ -68,6 +70,7 @@ function validateDate()
             return 'Дата должна быть в формате ГГГГ-ММ-ДД';
         }
     }
+    return "";
 }
 
 /*функция для проверки ошибки загрузки файла*/
@@ -75,6 +78,7 @@ function errorsFile ($name) {
     if (isset ($_FILES[$name]) && $_FILES[$name]['error'] > 0) {
         return 'Ошибка загрузки файла';
     }
+    return "";
 }
 
 /*функция для добавления атрибута выбранному селекту*/
@@ -83,6 +87,7 @@ function getSelected ($name, $id)
     if(isset($_POST[$name]) && getPostVal($name) == $id) {
         return 'selected';
     }
+    return "";
 }
 
 /*функция, возвращающая массив ошибок*/

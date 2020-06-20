@@ -12,7 +12,7 @@
         </ul>
     </nav>
 
-    <a class="button button--transparent button--plus content__side-button" href="form-project.html">Добавить проект</a>
+    <a class="button button--transparent button--plus content__side-button" href="project.php">Добавить проект</a>
 </section>
 
 <main class="content__main">
@@ -22,7 +22,7 @@
         <div class="form__row">
             <label class="form__label" for="name">Название <sup>*</sup></label>
 
-            <input class="form__input <?=getClassError($errors, 'name'); ?>" type="text" name="name" id="name" value="<?=getPostVal('name'); ?>" placeholder="Введите название">
+            <input class="form__input <?=getClassError($errors, 'name'); ?>" type="text" name="name" id="name" value="<?=trim(getPostVal('name')); ?>" placeholder="Введите название">
 
             <?php if(isset($errors['name'])): ?>
                 <p class="form__message"><?=$errors['name'] ?></p>

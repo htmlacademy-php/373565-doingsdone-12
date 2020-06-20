@@ -19,6 +19,8 @@ function validateEmail($con, $name)
     if (empty(getUser($con, $email))) {
         return 'Неверный email';
     }
+
+    return "";
 }
 
 /*функция для валидации пароля*/
@@ -35,6 +37,8 @@ function validatePassword ($con, $name)
     if (!empty($user) && !password_verify($password, $user['password'])) {
         return 'Неверный пароль';
     }
+
+    return "";
 }
 
 /*функция, возвращающая массив ошибок*/

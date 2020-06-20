@@ -28,6 +28,8 @@ function validateEmail($con, $name)
     if (!empty(getUser($con, $email))) {
        return 'E-mail уже используется другим пользователем';
     }
+
+    return "";
 }
 
 /*функция, возвращающая массив ошибок*/
