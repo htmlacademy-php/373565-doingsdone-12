@@ -167,8 +167,8 @@ if (isset($_SESSION['user'])) {
 }
 
 /*проверка наличия запроса на инвертирование статуса задачи*/
-if (isset($_GET['task'])) {
-    $task = getTaskWhereId($con, $_GET['task']);
+if (isset($_GET['task_completed'])) {
+    $task = getTaskWhereId($con, $_GET['task_completed']);
     changeStatus($con, $task);
     header('Location: index.php');
 }

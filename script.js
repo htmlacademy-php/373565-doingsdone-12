@@ -16,7 +16,7 @@ if ($checkbox.length) {
 function changeTask(value)
 {
   var searchParams = new URLSearchParams(window.location.search);
-  searchParams.set('task', value);
+  searchParams.set('task_completed', value);
   window.location = '/index.php?' + searchParams.toString();
 }
 

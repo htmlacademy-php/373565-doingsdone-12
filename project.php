@@ -33,6 +33,8 @@ function validateName ($projects)
     if (isValueInArray($projects, 'name', $name)) {
         return 'Проект с таким названием уже существует';
     }
+
+    return "";
 }
 
 /*функция, возвращающая массив ошибок*/

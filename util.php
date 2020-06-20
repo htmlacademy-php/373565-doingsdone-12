@@ -31,6 +31,7 @@ function getValue ($array, $key)
     if (isset($array[$key])) {
         return $array[$key];
     }
+    return "";
 }
 
 /*функция, возвращающая количество задач в проекте*/
@@ -119,6 +120,8 @@ function validateFilled($name)
     if (empty(trim($_POST[$name]))) {
         return 'Это поле должно быть заполнено';
     }
+
+    return "";
 }
 
 /*функция, возвращающая класс для поля с ошибкой*/
