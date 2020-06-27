@@ -3,17 +3,17 @@
 
 <head>
     <meta charset="UTF-8">
-    <title><?=$title; ?></title>
+    <title><?= $title; ?></title>
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/flatpickr.min.css">
 </head>
 
-<body class="<?php if(!isset($_SESSION['user'])): print('body-background'); endif; ?>">
+<body class="<?php if (!isset($_SESSION['user'])): print('body-background'); endif; ?>">
 <h1 class="visually-hidden">Дела в порядке</h1>
 
 <div class="page-wrapper">
-    <div class="container <?php if(isset($_SESSION['user'])): print('container--with-sidebar'); endif; ?>">
+    <div class="container <?php if (isset($_SESSION['user'])): print('container--with-sidebar'); endif; ?>">
         <?php if (isset($_SESSION['user'])): ?>
             <header class="main-header">
                 <a href="/">
@@ -25,7 +25,7 @@
 
                     <div class="main-header__side-item user-menu">
                         <div class="user-menu__data">
-                            <p><?=$user_name; ?></p>
+                            <p><?= $user_name; ?></p>
 
                             <a href="logout.php">Выйти</a>
                         </div>
@@ -43,7 +43,7 @@
                 </div>
             </header>
         <?php endif; ?>
-        <div class="content"><?=$content; ?></div>
+        <div class="content"><?= $content; ?></div>
     </div>
 </div>
 

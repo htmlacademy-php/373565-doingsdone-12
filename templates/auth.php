@@ -11,26 +11,28 @@
         <div class="form__row">
             <label class="form__label" for="email">E-mail <sup>*</sup></label>
 
-            <input class="form__input <?=getClassError($errors, 'email'); ?>" type="text" name="email" id="email" value="<?=getPostVal('email'); ?>" placeholder="Введите e-mail">
+            <input class="form__input <?= getClassError($errors, 'email'); ?>" type="text" name="email" id="email"
+                   value="<?= getPostVal('email'); ?>" placeholder="Введите e-mail">
 
-            <?php if(isset($errors['email'])): ?>
-                <p class="form__message"><?=$errors['email'] ?></p>
+            <?php if (isset($errors['email'])): ?>
+                <p class="form__message"><?= $errors['email'] ?></p>
             <?php endif; ?>
         </div>
 
         <div class="form__row">
             <label class="form__label" for="password">Пароль <sup>*</sup></label>
 
-            <input class="form__input <?=getClassError($errors, 'password'); ?>" type="password" name="password" id="password" value="<?=getPostVal('password'); ?>" placeholder="Введите пароль">
+            <input class="form__input <?= getClassError($errors, 'password'); ?>" type="password" name="password"
+                   id="password" value="<?= getPostVal('password'); ?>" placeholder="Введите пароль">
 
-            <?php if(isset($errors['password'])): ?>
-                <p class="form__message"><?=$errors['password'] ?></p>
+            <?php if (isset($errors['password'])): ?>
+                <p class="form__message"><?= $errors['password'] ?></p>
             <?php endif; ?>
         </div>
 
         <div class="form__row form__row--controls">
             <?php if (count($errors)): ?>
-                <p class="error-message"><?=getErrorMessage($errors); ?></p>
+                <p class="error-message"><?= getErrorMessage($errors); ?></p>
             <?php endif; ?>
 
             <input class="button" type="submit" name="" value="Войти">

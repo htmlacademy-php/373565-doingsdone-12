@@ -4,7 +4,7 @@ require_once 'util.php';
 session_start();
 
 /*объявление переменных*/
-if(isset($_SESSION['user'])) {
+if (isset($_SESSION['user'])) {
     $user_id = $_SESSION['user'];
     $projects = getProjects($con, $user_id);
     $tasksAll = array_reverse(getTasksAll($con, $user_id));
@@ -13,7 +13,8 @@ if(isset($_SESSION['user'])) {
 }
 
 /*функция для добавления задачи в БД*/
-function addTask ($con, int $user_id, string $task_name, int $project_id, string $due_date, string $file_path) {
+function addTask($con, int $user_id, string $task_name, int $project_id, string $due_date, string $file_path)
+{
 
     $parameters = [$user_id, $task_name, $project_id];
     $sql = 'INSERT INTO tasks (user_id, name, project_id';
@@ -31,7 +32,7 @@ function addTask ($con, int $user_id, string $task_name, int $project_id, string
     for ($i = 0; $i < count($parameters); $i++) {
         $sql .= '?, ';
     }
-    $sql = substr($sql, 0, -2).')';
+    $sql = substr($sql, 0, -2) . ')';
 
     $stmt = db_get_prepare_stmt($con, $sql, $parameters);
     mysqli_stmt_execute($stmt);
@@ -74,7 +75,8 @@ function validateDate()
 }
 
 /*функция для проверки ошибки загрузки файла*/
-function errorsFile ($name) {
+function errorsFile($name)
+{
     if (isset ($_FILES[$name]) && $_FILES[$name]['error'] > 0) {
         return 'Ошибка загрузки файла';
     }
@@ -82,16 +84,16 @@ function errorsFile ($name) {
 }
 
 /*функция для добавления атрибута выбранному селекту*/
-function getSelected ($name, $id)
+function getSelected($name, $id)
 {
-    if(isset($_POST[$name]) && getPostVal($name) == $id) {
+    if (isset($_POST[$name]) && getPostVal($name) == $id) {
         return 'selected';
     }
     return "";
 }
 
 /*функция, возвращающая массив ошибок*/
-function getErrors ($projects)
+function getErrors($projects)
 {
     $errors = [];
 
@@ -100,15 +102,15 @@ function getErrors ($projects)
             return validateFilled('name');
         },
 
-        'project' => function($projects) {
+        'project' => function ($projects) {
             return validateRealProject($projects);
         },
 
-        'date' => function() {
+        'date' => function () {
             return validateDate();
         },
 
-        'file' => function() {
+        'file' => function () {
             return errorsFile('file');
         }
 
@@ -126,7 +128,7 @@ function getErrors ($projects)
 }
 
 /*функция для обработки формы добавления задачи*/
-function processingFormAddTask ($con, $user_id, $errors)
+function processingFormAddTask($con, $user_id, $errors)
 {
     $task_name = getPostVal('name');
     $project_id = getPostVal('project');
@@ -136,9 +138,8 @@ function processingFormAddTask ($con, $user_id, $errors)
 
     if (!count($errors)) {
         if (!empty($file_name) && isset($_FILES['file'])) {
-            if(move_uploaded_file($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/'.$file_name))
-            {
-                $file_path = $_SERVER['DOCUMENT_ROOT'].'/'.$file_name;
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $_SERVER['DOCUMENT_ROOT'] . '/' . $file_name)) {
+                $file_path = $_SERVER['DOCUMENT_ROOT'] . '/' . $file_name;
             }
         }
         addTask($con, $user_id, $task_name, $project_id, $due_date, $file_path);
@@ -155,12 +156,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 if (isset($_SESSION['user'])) {
     $add_content = include_template('add.php', ['projects' => $projects, 'tasksAll' => $tasksAll, 'errors' => $errors]);
 
-    $layout_content = include_template('layout.php', ['content' => $add_content, 'title' => 'Дела в порядке', 'user_name' => $user_name]);
+    $layout_content = include_template('layout.php',
+        ['content' => $add_content, 'title' => 'Дела в порядке', 'user_name' => $user_name]);
 
     print($layout_content);
 } else {
     header('Location: index.php');
     exit();
 }
-
-

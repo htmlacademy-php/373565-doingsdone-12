@@ -14,9 +14,9 @@ function isDateDiffLess($date)
 }
 
 /*функция, возвращающая url*/
-function getUrl ($file_path)
+function getUrl($file_path)
 {
-    return str_replace($_SERVER['DOCUMENT_ROOT'], 'http://'.$_SERVER['HTTP_HOST'], $file_path);
+    return str_replace($_SERVER['DOCUMENT_ROOT'], 'http://' . $_SERVER['HTTP_HOST'], $file_path);
 }
 
 /*функция, возвращающая массив задач для конкретного пользователя и проекта*/
@@ -39,7 +39,7 @@ function getTasks($con, int $user_id, int $project_id = null)
 }
 
 /*функция, возвращающая массив задач из строки поиска*/
-function getSearchTasks ($con, $search, int $user_id)
+function getSearchTasks($con, $search, int $user_id)
 {
     $sql = 'SELECT * FROM tasks WHERE user_id = ? AND MATCH(name) AGAINST (? IN BOOLEAN MODE)';
 
@@ -72,7 +72,7 @@ function getTaskWhereId($con, int $task_id)
 }
 
 /*функция, инвертирующая статус задачи*/
-function changeStatus ($con, $task)
+function changeStatus($con, $task)
 {
     $status = 1 - getValue($task, 'status');
 
@@ -84,16 +84,16 @@ function changeStatus ($con, $task)
 }
 
 /*функция для добавления параметра к строке запроса*/
-function getNewURL ($name_params, $value_params)
+function getNewURL($name_params, $value_params)
 {
     $params = $_GET;
     $params[$name_params] = $value_params;
 
-    return pathinfo(__FILE__, PATHINFO_BASENAME). '?' . http_build_query($params);
+    return pathinfo(__FILE__, PATHINFO_BASENAME) . '?' . http_build_query($params);
 }
 
 /*функция, возвращающая массив задач на сегодня*/
-function getTasksToday ($tasks, $cur_date)
+function getTasksToday($tasks, $cur_date)
 {
     $tasks_new = [];
     foreach ($tasks as $task) {
@@ -110,7 +110,7 @@ function getTasksToday ($tasks, $cur_date)
 }
 
 /*функция, возвращающая массив задач на завтра*/
-function getTaskTomorrow ($tasks, $cur_date)
+function getTaskTomorrow($tasks, $cur_date)
 {
     $tasks_new = [];
     foreach ($tasks as $task) {
@@ -127,7 +127,7 @@ function getTaskTomorrow ($tasks, $cur_date)
 }
 
 /*функция, возвращающая массив просроченных задач*/
-function getTaskOverdue ($tasks, $cur_date)
+function getTaskOverdue($tasks, $cur_date)
 {
     $tasks_new = [];
     foreach ($tasks as $task) {
@@ -144,7 +144,7 @@ function getTaskOverdue ($tasks, $cur_date)
 
 /*объявление переменных*/
 $project_id = null;
-if(isset($_SESSION['user'])) {
+if (isset($_SESSION['user'])) {
     $user_id = $_SESSION['user'];
     $projects = getProjects($con, $user_id);
     $tasksAll = array_reverse(getTasksAll($con, $user_id));
@@ -202,8 +202,10 @@ if (isset($_GET['search'])) {
 
 /*подключение шаблона*/
 if (isset($_SESSION['user'])) {
-    $main_content = include_template('main.php', ['projects' => $projects, 'tasks' => $tasks, 'tasksAll' => $tasksAll, 'tasks_filter' => $tasks_filter]);
-    $layout_content = include_template('layout.php', ['content' => $main_content, 'title' => 'Дела в порядке', 'user_name' => $user_name]);
+    $main_content = include_template('main.php',
+        ['projects' => $projects, 'tasks' => $tasks, 'tasksAll' => $tasksAll, 'tasks_filter' => $tasks_filter]);
+    $layout_content = include_template('layout.php',
+        ['content' => $main_content, 'title' => 'Дела в порядке', 'user_name' => $user_name]);
 } else {
     $guest_content = include_template('guest.php');
 

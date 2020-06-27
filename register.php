@@ -4,7 +4,7 @@ require_once 'util.php';
 $errors = getErrors($con);
 
 /*функция для добавления пользователя*/
-function addUser ($con, string $email, string $name, string $password)
+function addUser($con, string $email, string $name, string $password)
 {
     $parameters = [$email, $name, $password];
     $sql = 'INSERT INTO users (email, name, password) VALUES (?, ?, ?)';
@@ -26,14 +26,14 @@ function validateEmail($con, $name)
     }
 
     if (!empty(getUser($con, $email))) {
-       return 'E-mail уже используется другим пользователем';
+        return 'E-mail уже используется другим пользователем';
     }
 
     return "";
 }
 
 /*функция, возвращающая массив ошибок*/
-function getErrors ($con)
+function getErrors($con)
 {
     $errors = [];
 
@@ -63,18 +63,18 @@ function getErrors ($con)
 }
 
 /*функция для обработки формы регистрации*/
-function processingFormRegister ($con, $errors)
+function processingFormRegister($con, $errors)
 {
     $email = getPostVal('email');
     $password = getPostVal('password');
     $user_name = getPostVal('name');
 
     if (!count($errors)) {
-       $password = password_hash($password, PASSWORD_DEFAULT);
-       addUser($con, $email, $user_name, $password);
-       session_start();
-       $_SESSION['user'] = getUser($con, $email)['id'];
-       header('Location: index.php');
+        $password = password_hash($password, PASSWORD_DEFAULT);
+        addUser($con, $email, $user_name, $password);
+        session_start();
+        $_SESSION['user'] = getUser($con, $email)['id'];
+        header('Location: index.php');
     }
 }
 

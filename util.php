@@ -2,7 +2,8 @@
 require_once 'helpers.php';
 require_once 'db.php';
 
-function connect_db ($params) {
+function connect_db($params)
+{
     $con = mysqli_connect($params['host'], $params['user'], $params['password'], $params['db_name']);
 
     mysqli_set_charset($con, 'utf8');
@@ -26,7 +27,7 @@ function isValueInArray($array, $key, $value)
 }
 
 /*функция, возвращающая значение массива по ключу при его наличии*/
-function getValue ($array, $key)
+function getValue($array, $key)
 {
     if (isset($array[$key])) {
         return $array[$key];
@@ -125,9 +126,9 @@ function validateFilled($name)
 }
 
 /*функция, возвращающая класс для поля с ошибкой*/
-function getClassError ($errors, $name)
+function getClassError($errors, $name)
 {
-    if (isset($errors[$name])){
+    if (isset($errors[$name])) {
         return 'form__input--error';
     }
     return '';

@@ -1,0 +1,14 @@
+{
+    "name": "pc-user/doingsdone",
+    "description": "website to plan your to-do list",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Irina Nikitina",
+            "email": "8129p@mail.ru"
+        }
+    ],
+    "require": {
+        "swiftmailer/swiftmailer": "^6.2"
+    }
+}

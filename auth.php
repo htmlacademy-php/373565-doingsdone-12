@@ -24,7 +24,7 @@ function validateEmail($con, $name)
 }
 
 /*функция для валидации пароля*/
-function validatePassword ($con, $name)
+function validatePassword($con, $name)
 {
     $password = getPostVal($name);
 
@@ -42,7 +42,7 @@ function validatePassword ($con, $name)
 }
 
 /*функция, возвращающая массив ошибок*/
-function getErrors ($con)
+function getErrors($con)
 {
     $errors = [];
 
@@ -68,7 +68,7 @@ function getErrors ($con)
 }
 
 /*функция, формирующая сообщение об ошибках*/
-function getErrorMessage ($errors)
+function getErrorMessage($errors)
 {
     if (getValue($errors, 'email') == 'Неверный email' || getValue($errors, 'password') == 'Неверный пароль') {
         return 'Вы ввели неверный email/пароль';
@@ -78,7 +78,7 @@ function getErrorMessage ($errors)
 }
 
 /*функция для обработки формы аутентификации*/
-function processingFormAuth ($con, $errors)
+function processingFormAuth($con, $errors)
 {
     $email = getPostVal('email');
 
