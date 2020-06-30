@@ -4,7 +4,7 @@ require_once 'util.php';
 session_start();
 
 /*объявление переменных*/
-if(isset($_SESSION['user'])) {
+if (isset($_SESSION['user'])) {
     $user_id = $_SESSION['user'];
     $projects = getProjects($con, $user_id);
     $tasksAll = array_reverse(getTasksAll($con, $user_id));
@@ -13,7 +13,8 @@ if(isset($_SESSION['user'])) {
 }
 
 /*функция для добавления проекта в БД*/
-function addProject ($con, int $user_id, string $project_name) {
+function addProject($con, int $user_id, string $project_name)
+{
 
     $parameters = [$user_id, $project_name];
     $sql = 'INSERT INTO projects (user_id, name) VALUES (?, ?)';
@@ -22,7 +23,7 @@ function addProject ($con, int $user_id, string $project_name) {
     mysqli_stmt_execute($stmt);
 }
 
-function validateName ($projects)
+function validateName($projects)
 {
     $name = trim(getPostVal('name'));
 
@@ -38,7 +39,7 @@ function validateName ($projects)
 }
 
 /*функция, возвращающая массив ошибок*/
-function getErrors ($projects)
+function getErrors($projects)
 {
     $errors = [];
 
@@ -60,7 +61,7 @@ function getErrors ($projects)
 }
 
 /*функция для обработки формы добавления проекта*/
-function processingFormAddProject ($con, $user_id, $errors)
+function processingFormAddProject($con, $user_id, $errors)
 {
     $project_name = getPostVal('name');
 
@@ -77,9 +78,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 /*подключение шаблона*/
 if (isset($_SESSION['user'])) {
-    $project_content = include_template('project.php', ['projects' => $projects, 'tasksAll' => $tasksAll, 'errors' => $errors]);
+    $project_content = include_template('project.php',
+        ['projects' => $projects, 'tasksAll' => $tasksAll, 'errors' => $errors]);
 
-    $layout_content = include_template('layout.php', ['content' => $project_content, 'title' => 'Дела в порядке', 'user_name' => $user_name]);
+    $layout_content = include_template('layout.php',
+        ['content' => $project_content, 'title' => 'Дела в порядке', 'user_name' => $user_name]);
 
     print($layout_content);
 } else {
