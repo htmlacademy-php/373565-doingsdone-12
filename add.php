@@ -12,10 +12,17 @@ if (isset($_SESSION['user'])) {
     $errors = getErrors($projects);
 }
 
-/*функция для добавления задачи в БД*/
+/**
+ * функция для добавления задачи в БД
+ * @param resource $con ресурс соединения
+ * @param integer $user_id идентификатор пользователя
+ * @param string $task_name название задачи
+ * @param integer $project_id идентификатор проекта
+ * @param string $due_date дата выполнения
+ * @param string $file_path путь к файлу
+ */
 function addTask($con, int $user_id, string $task_name, int $project_id, string $due_date, string $file_path)
 {
-
     $parameters = [$user_id, $task_name, $project_id];
     $sql = 'INSERT INTO tasks (user_id, name, project_id';
 
@@ -38,7 +45,12 @@ function addTask($con, int $user_id, string $task_name, int $project_id, string 
     mysqli_stmt_execute($stmt);
 }
 
-/*функция, возвращающая имя файла из формы*/
+/**
+ * функция, возвращающая имя файла из формы
+ * @param string $name имя поля формы
+ *
+ * @return string имя файла
+ */
 function getFilesVal($name)
 {
     if (isset ($_FILES[$name])) {
@@ -47,16 +59,24 @@ function getFilesVal($name)
     return "";
 }
 
-/*функция для валидации проекта*/
+/**
+ * функция для валидации проекта
+ * @param array $projects массив проектов
+ *
+ * @return string текст ошибки
+ */
 function validateRealProject($projects)
 {
-    if (!isValueInArray($projects, 'id', $_POST['project'])) {
+    if (!isValueInArray($projects, 'id', (int)$_POST['project'])) {
         return 'Проект должен быть реально существующим';
     }
     return "";
 }
 
-/*функция для валидации даты*/
+/**
+ * функция для валидации даты
+ * @return string текст ошибки
+ */
 function validateDate()
 {
     $date = $_POST['date'];
@@ -74,7 +94,12 @@ function validateDate()
     return "";
 }
 
-/*функция для проверки ошибки загрузки файла*/
+/**
+ * функция для проверки ошибки загрузки файла
+ * @param string $name имя поля формы
+ *
+ * @return string текст ошибки
+ */
 function errorsFile($name)
 {
     if (isset ($_FILES[$name]) && $_FILES[$name]['error'] > 0) {
@@ -83,23 +108,34 @@ function errorsFile($name)
     return "";
 }
 
-/*функция для добавления атрибута выбранному селекту*/
+/**
+ * функция для добавления атрибута выбранному селекту
+ * @param string $name имя поля формы
+ * @param integer $id идентификатор
+ *
+ * @return string атрибут
+ */
 function getSelected($name, $id)
 {
-    if (isset($_POST[$name]) && getPostVal($name) == $id) {
+    if (isset($_POST[$name]) && (int)getPostVal($name) === $id) {
         return 'selected';
     }
     return "";
 }
 
-/*функция, возвращающая массив ошибок*/
+/**
+ * функция, возвращающая массив ошибок
+ * @param array $projects массив проектов
+ *
+ * @return array массив ошибок
+ */
 function getErrors($projects)
 {
     $errors = [];
 
     $rules = [
         'name' => function () {
-            return validateFilled('name');
+            return validateFilledAndLength('name', 1, 255);
         },
 
         'project' => function ($projects) {
@@ -127,7 +163,12 @@ function getErrors($projects)
     return array_filter($errors);
 }
 
-/*функция для обработки формы добавления задачи*/
+/**
+ * функция для обработки формы добавления задачи
+ * @param resource $con ресурс соединения
+ * @param integer $user_id идентификатор пользователя
+ * @param array $errors массив ошибок
+ */
 function processingFormAddTask($con, $user_id, $errors)
 {
     $task_name = getPostVal('name');
@@ -148,7 +189,7 @@ function processingFormAddTask($con, $user_id, $errors)
 }
 
 /*проверка отправки формы*/
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     processingFormAddTask($con, $user_id, $errors);
 }
 

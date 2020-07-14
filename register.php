@@ -1,9 +1,17 @@
 <?php
 require_once 'util.php';
 
+session_start();
+
 $errors = getErrors($con);
 
-/*функция для добавления пользователя*/
+/**
+ * функция для добавления пользователя
+ * @param resource $con ресурс соединения
+ * @param string $email email пользователя
+ * @param string $name имя пользователя
+ * @param string $password пароль пользователя
+ */
 function addUser($con, string $email, string $name, string $password)
 {
     $parameters = [$email, $name, $password];
@@ -12,13 +20,27 @@ function addUser($con, string $email, string $name, string $password)
     mysqli_stmt_execute($stmt);
 }
 
-/*функция для валидации email*/
-function validateEmail($con, $name)
+/**
+ * функция для валидации email
+ * @param resource $con ресурс соединения
+ * @param string $name имя поля формы
+ * @param integer $min минимальная длина введённого значения
+ * @param integer $max максимальная длина введённого значения
+ *
+ * @return string текст ошибки
+ */
+function validateEmail($con, $name, $min, $max)
 {
     $email = getPostVal($name);
 
     if (empty($email)) {
         return 'Это поле должно быть заполнено';
+    }
+
+    $len = strlen(trim($_POST[$name]));
+
+    if ($len < $min or $len > $max) {
+        return 'Значение должно быть от ' . $min . ' до ' . $max . ' символов';
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -32,22 +54,27 @@ function validateEmail($con, $name)
     return "";
 }
 
-/*функция, возвращающая массив ошибок*/
+/**
+ * функция, возвращающая массив ошибок
+ * @param resource $con ресурс соединения
+ *
+ * @return array массив ошибок
+ */
 function getErrors($con)
 {
     $errors = [];
 
     $rules = [
         'email' => function ($con) {
-            return validateEmail($con, 'email');
+            return validateEmail($con, 'email', 1, 64);
         },
 
         'password' => function () {
-            return validateFilled('password');
+            return validateFilledAndLength('password', 1, 64);
         },
 
         'name' => function () {
-            return validateFilled('name');
+            return validateFilledAndLength('name', 1, 255);
         },
     ];
 
@@ -62,7 +89,11 @@ function getErrors($con)
     return array_filter($errors);
 }
 
-/*функция для обработки формы регистрации*/
+/**
+ * функция для обработки формы регистрации
+ * @param resource $con ресурс соединения
+ * @param array $errors массив ошибок
+ */
 function processingFormRegister($con, $errors)
 {
     $email = getPostVal('email');
@@ -79,13 +110,18 @@ function processingFormRegister($con, $errors)
 }
 
 /*проверка отправки формы*/
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    session_abort();
     processingFormRegister($con, $errors);
 }
 
 /*подключение шаблона*/
-$register_content = include_template('register.php', ['errors' => $errors]);
+if (!isset($_SESSION['user'])) {
+    $register_content = include_template('register.php', ['errors' => $errors]);
 
-$layout_content = include_template('layout.php', ['content' => $register_content, 'title' => 'Дела в порядке']);
+    $layout_content = include_template('layout.php', ['content' => $register_content, 'title' => 'Дела в порядке']);
 
-print($layout_content);
+    print($layout_content);
+} else {
+    header('Location: index.php');
+}

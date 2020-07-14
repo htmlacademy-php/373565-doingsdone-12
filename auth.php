@@ -1,15 +1,31 @@
 <?php
 require_once 'util.php';
 
+session_start();
+
 $errors = getErrors($con);
 
-/*функция для валидации email*/
-function validateEmail($con, $name)
+/**
+ * функция для валидации email
+ * @param resource $con ресурс соединения
+ * @param string $name имя поля формы
+ * @param integer $min минимальная длина введённого значения
+ * @param integer $max максимальная длина введённого значения
+ *
+ * @return string текст ошибки
+ */
+function validateEmail($con, $name, $min, $max)
 {
     $email = getPostVal($name);
 
     if (empty($email)) {
         return 'Это поле должно быть заполнено';
+    }
+
+    $len = strlen(trim($email));
+
+    if ($len < $min or $len > $max) {
+        return 'Значение должно быть от ' . $min . ' до ' . $max . ' символов';
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -23,13 +39,27 @@ function validateEmail($con, $name)
     return "";
 }
 
-/*функция для валидации пароля*/
-function validatePassword($con, $name)
+/**
+ * функция для валидации пароля
+ * @param resource $con ресурс соединения
+ * @param string $name имя поля формы
+ * @param integer $min минимальная длина введённого значения
+ * @param integer $max максимальная длина введённого значения
+ *
+ * @return string текст ошибки
+ */
+function validatePassword($con, $name, $min, $max)
 {
     $password = getPostVal($name);
 
     if (empty($password)) {
         return 'Это поле должно быть заполнено';
+    }
+
+    $len = strlen(trim($_POST[$name]));
+
+    if ($len < $min or $len > $max) {
+        return 'Значение должно быть от ' . $min . ' до ' . $max . ' символов';
     }
 
     $user = getUser($con, getPostVal('email'));
@@ -41,18 +71,23 @@ function validatePassword($con, $name)
     return "";
 }
 
-/*функция, возвращающая массив ошибок*/
+/**
+ * функция, возвращающая массив ошибок
+ * @param resource $con ресурс соединения
+ *
+ * @return array массив ошибок
+ */
 function getErrors($con)
 {
     $errors = [];
 
     $rules = [
         'email' => function ($con) {
-            return validateEmail($con, 'email');
+            return validateEmail($con, 'email', 1, 128);
         },
 
         'password' => function ($con) {
-            return validatePassword($con, 'password');
+            return validatePassword($con, 'password', 1, 64);
         },
     ];
 
@@ -67,17 +102,26 @@ function getErrors($con)
     return array_filter($errors);
 }
 
-/*функция, формирующая сообщение об ошибках*/
+/**
+ * функция, формирующая сообщение об ошибках
+ * @param array $errors массив ошибок
+ *
+ * @return string текст сообщения об ошибках
+ */
 function getErrorMessage($errors)
 {
-    if (getValue($errors, 'email') == 'Неверный email' || getValue($errors, 'password') == 'Неверный пароль') {
+    if (getValue($errors, 'email') === 'Неверный email' || getValue($errors, 'password') === 'Неверный пароль') {
         return 'Вы ввели неверный email/пароль';
     } else {
         return 'Пожалуйста, исправьте ошибки в форме';
     }
 }
 
-/*функция для обработки формы аутентификации*/
+/**
+ * функция для обработки формы аутентификации
+ * @param resource $con ресурс соединения
+ * @param array $errors массив ошибок
+ */
 function processingFormAuth($con, $errors)
 {
     $email = getPostVal('email');
@@ -90,13 +134,18 @@ function processingFormAuth($con, $errors)
 }
 
 /*проверка отправки формы*/
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    session_abort();
     processingFormAuth($con, $errors);
 }
 
 /*подключение шаблона*/
-$auth_content = include_template('auth.php', ['errors' => $errors]);
+if (!isset($_SESSION['user'])) {
+    $auth_content = include_template('auth.php', ['errors' => $errors]);
 
-$layout_content = include_template('layout.php', ['content' => $auth_content, 'title' => 'Дела в порядке']);
+    $layout_content = include_template('layout.php', ['content' => $auth_content, 'title' => 'Дела в порядке']);
 
-print($layout_content);
+    print($layout_content);
+} else {
+    header('Location: index.php');
+}
