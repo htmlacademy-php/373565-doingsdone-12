@@ -3,7 +3,12 @@ require_once 'util.php';
 
 session_start();
 
-/*функция, проверяющая, осталось ли до выполнения задачи менее суток*/
+/**
+ * функция, проверяющая, осталось ли до выполнения задачи менее суток
+ * @param string $date дата выполнения задачи
+ *
+ * @return integer разница между датами в часах
+ */
 function isDateDiffLess($date)
 {
     $cur_date = time();
@@ -13,13 +18,25 @@ function isDateDiffLess($date)
     return $diff <= 24;
 }
 
-/*функция, возвращающая url*/
+/**
+ * функция, возвращающая url
+ * @param string $file_path путь к файлу
+ *
+ * @return string url файла
+ */
 function getUrl($file_path)
 {
     return str_replace($_SERVER['DOCUMENT_ROOT'], 'http://' . $_SERVER['HTTP_HOST'], $file_path);
 }
 
-/*функция, возвращающая массив задач для конкретного пользователя и проекта*/
+/**
+ * функция, возвращающая массив задач для конкретного пользователя и проекта
+ * @param resource $con ресурс соединения
+ * @param integer $user_id идентификатор пользователя
+ * @param integer $project_id идентификатор проекта
+ *
+ * @return array массив задач для конкретного пользователя и проекта
+ */
 function getTasks($con, int $user_id, int $project_id = null)
 {
     $parameters = [];
@@ -38,7 +55,14 @@ function getTasks($con, int $user_id, int $project_id = null)
     return $tasks;
 }
 
-/*функция, возвращающая массив задач из строки поиска*/
+/**
+ * функция, возвращающая массив задач из строки поиска
+ * @param resource $con ресурс соединения
+ * @param string $search текст строки поиска
+ * @param integer $user_id идентификатор пользователя
+ *
+ * @return array массив задач из строки поиска
+ */
 function getSearchTasks($con, $search, int $user_id)
 {
     $sql = 'SELECT * FROM tasks WHERE user_id = ? AND MATCH(name) AGAINST (? IN BOOLEAN MODE)';
@@ -53,7 +77,13 @@ function getSearchTasks($con, $search, int $user_id)
     return $tasks;
 }
 
-/*функция, возвращающая задачу по идентификатору*/
+/**
+ * функция, возвращающая задачу по идентификатору
+ * @param resource $con ресурс соединения
+ * @param integer $task_id идентификатор задачи
+ *
+ * @return array массив задач по идентификатору
+ */
 function getTaskWhereId($con, int $task_id)
 {
     $sql = 'SELECT * FROM tasks WHERE id = ?';
@@ -71,7 +101,11 @@ function getTaskWhereId($con, int $task_id)
     return $task;
 }
 
-/*функция, инвертирующая статус задачи*/
+/**
+ * функция, инвертирующая статус задачи
+ * @param resource $con ресурс соединения
+ * @param array $task массив задач
+ */
 function changeStatus($con, $task)
 {
     $status = 1 - getValue($task, 'status');
@@ -83,7 +117,13 @@ function changeStatus($con, $task)
     mysqli_stmt_execute($stmt);
 }
 
-/*функция для добавления параметра к строке запроса*/
+/**
+ * функция для добавления параметра к строке запроса
+ * @param string $name_params имя параметра из массива $_GET
+ * @param string $value_params значение параметра
+ *
+ * @return string url с новым параметром
+ */
 function getNewURL($name_params, $value_params)
 {
     $params = $_GET;
@@ -92,10 +132,16 @@ function getNewURL($name_params, $value_params)
     return pathinfo(__FILE__, PATHINFO_BASENAME) . '?' . http_build_query($params);
 }
 
-/*функция, возвращающая массив задач на сегодня*/
-function getTasksToday($tasks, $cur_date)
+/**
+ * функция, возвращающая массив задач на сегодня
+ * @param array $tasks массив задач
+ *
+ * @return array массив задач на сегодня
+ */
+function getTasksToday($tasks)
 {
     $tasks_new = [];
+    $cur_date = time();
     foreach ($tasks as $task) {
         $task_date = strtotime(getValue($task, 'due_date'));
 
@@ -109,10 +155,16 @@ function getTasksToday($tasks, $cur_date)
     return $tasks_new;
 }
 
-/*функция, возвращающая массив задач на завтра*/
-function getTaskTomorrow($tasks, $cur_date)
+/**
+ * функция, возвращающая массив задач на завтра
+ * @param array $tasks массив задач
+ *
+ * @return array массив задач на завтра
+ */
+function getTaskTomorrow($tasks)
 {
     $tasks_new = [];
+    $cur_date = time();
     foreach ($tasks as $task) {
         $task_date = strtotime(getValue($task, 'due_date'));
 
@@ -126,13 +178,19 @@ function getTaskTomorrow($tasks, $cur_date)
     return $tasks_new;
 }
 
-/*функция, возвращающая массив просроченных задач*/
-function getTaskOverdue($tasks, $cur_date)
+/**
+ * функция, возвращающая массив просроченных задач
+ * @param array $tasks массив задач
+ *
+ * @return array массив просроченных задач
+ */
+function getTaskOverdue($tasks)
 {
     $tasks_new = [];
+    $cur_date = time();
     foreach ($tasks as $task) {
         $task_date = strtotime(getValue($task, 'due_date'));
-        if ($task_date != 0 && getValue($task, 'status') != 1) {
+        if ((int)$task_date !== 0 && getValue($task, 'status') !== 1) {
             $diff = floor(($cur_date - $task_date) / 3600);
             if ($diff >= 24) {
                 $tasks_new[] = $task;
@@ -154,7 +212,7 @@ if (isset($_SESSION['user'])) {
 
 /*проверка выбранного id проекта в адресной строке*/
 if (isset($_SESSION['user']) && isset($_GET['project_id'])) {
-    $project_id = $_GET['project_id'];
+    $project_id = (int)$_GET['project_id'];
     if (!isValueInArray($projects, 'id', $project_id)) {
         http_response_code(404);
         exit();
@@ -175,16 +233,15 @@ if (isset($_GET['task_completed'])) {
 
 /*проверка выбора фильтра задач*/
 if (isset($_GET['filter'])) {
-    $cur_date = time();
     switch ($_GET['filter']) {
         case 1:
-            $tasks = getTasksToday($tasks, $cur_date);
+            $tasks = getTasksToday($tasks);
             break;
         case 2:
-            $tasks = getTaskTomorrow($tasks, $cur_date);
+            $tasks = getTaskTomorrow($tasks);
             break;
         case 3:
-            $tasks = getTaskOverdue($tasks, $cur_date);
+            $tasks = getTaskOverdue($tasks);
             break;
         default:
             break;

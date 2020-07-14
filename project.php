@@ -12,7 +12,12 @@ if (isset($_SESSION['user'])) {
     $errors = getErrors($projects);
 }
 
-/*функция для добавления проекта в БД*/
+/**
+ * функция для добавления проекта в БД
+ * @param resource $con ресурс соединения
+ * @param integer $user_id идентификатор пользователя
+ * @param string $project_name название проекта
+ */
 function addProject($con, int $user_id, string $project_name)
 {
 
@@ -23,12 +28,26 @@ function addProject($con, int $user_id, string $project_name)
     mysqli_stmt_execute($stmt);
 }
 
-function validateName($projects)
+/**
+ * функция для валидации имени проекта
+ * @param array $projects массив проектов
+ * @param integer $min минимальная длина названия проекта
+ * @param integer $max максимальная длина названия проекта
+ *
+ * @return string текст ошибки
+ */
+function validateName($projects, $min, $max)
 {
     $name = trim(getPostVal('name'));
 
     if (empty($name)) {
         return 'Это поле должно быть заполнено';
+    }
+
+    $len = strlen($name);
+
+    if ($len < $min or $len > $max) {
+        return 'Значение должно быть от ' . $min . ' до ' . $max . ' символов';
     }
 
     if (isValueInArray($projects, 'name', $name)) {
@@ -38,14 +57,18 @@ function validateName($projects)
     return "";
 }
 
-/*функция, возвращающая массив ошибок*/
+/**
+ * функция, возвращающая массив ошибок
+ * @param array $projects массив проектов
+ * @return array массив ошибок
+ */
 function getErrors($projects)
 {
     $errors = [];
 
     $rules = [
         'name' => function ($projects) {
-            return validateName($projects);
+            return validateName($projects, 1, 255);
         }
     ];
 
@@ -60,7 +83,12 @@ function getErrors($projects)
     return array_filter($errors);
 }
 
-/*функция для обработки формы добавления проекта*/
+/**
+ * функция для обработки формы добавления проекта
+ * @param resource $con ресурс соединения
+ * @param integer $user_id идентификатор пользователя
+ * @param array $errors массив ошибок
+ */
 function processingFormAddProject($con, $user_id, $errors)
 {
     $project_name = getPostVal('name');
@@ -72,7 +100,7 @@ function processingFormAddProject($con, $user_id, $errors)
 }
 
 /*проверка отправки формы*/
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     processingFormAddProject($con, $user_id, $errors);
 }
 

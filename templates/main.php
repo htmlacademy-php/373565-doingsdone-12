@@ -4,8 +4,8 @@
     <nav class="main-navigation">
         <ul class="main-navigation__list">
             <?php foreach ($projects as $project): ?>
-                <li class="main-navigation__list-item <?php if (getValue($_GET,
-                        'project_id') == $project['id']): ?> main-navigation__list-item--active<?php endif; ?>">
+                <li class="main-navigation__list-item <?php if ((int)getValue($_GET,
+                        'project_id') === $project['id']): ?> main-navigation__list-item--active<?php endif; ?>">
                     <a class="main-navigation__list-item-link"
                        href="index.php?project_id=<?= $project['id'] ?>"><?= htmlspecialchars($project['name']); ?></a>
                     <span class="main-navigation__list-item-count"><?= countProjectTasks($tasksAll,
@@ -41,7 +41,7 @@
         <label class="checkbox">
             <!--добавить сюда атрибут "checked", если переменная $show_complete_tasks равна единице-->
             <input class="checkbox__input visually-hidden show_completed" type="checkbox"
-                   <?php if (getValue($_GET, 'show_completed') == 1): ?>checked <?php endif; ?>>
+                   <?php if (getValue($_GET, 'show_completed') === '1'): ?>checked <?php endif; ?>>
             <span class="checkbox__text">Показывать выполненные</span>
         </label>
     </div>
@@ -70,7 +70,8 @@
             </td>
 
             <td class="task__date"><?php if (isset($task['due_date'])): print(date('d.m.Y',
-                    strtotime($task['due_date']))); else: print ("Нет"); ?><?php endif; ?></td>
+                    strtotime($task['due_date'])));
+                else: print ("Нет"); ?><?php endif; ?></td>
             </tr>
         <?php endforeach; ?>
         <?php if (!empty($_GET['search']) && empty($tasks)): ?>

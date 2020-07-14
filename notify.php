@@ -3,7 +3,12 @@
 require_once 'util.php';
 require_once('vendor/autoload.php');
 
-/*функция, возвращающая массив невыполненных задач на сегодня*/
+/**
+ * функция, возвращающая массив невыполненных задач на сегодня
+ * @param resource $con ресурс соединения
+ *
+ * @return array $tasks массив невыполненных задач на сегодня
+ */
 function getTaskTodayNotCompleted($con)
 {
     $sql = 'SELECT * FROM tasks WHERE status = 0 AND due_date = CURRENT_DATE';
@@ -13,7 +18,13 @@ function getTaskTodayNotCompleted($con)
     return $tasks;
 }
 
-/*функция, возвращающая email пользователя по идентификатору*/
+/**
+ * функция, возвращающая email пользователя по идентификатору
+ * @param resource $con ресурс соединения
+ * @param integer $user_id идентификатор пользователя
+ *
+ * @return string email пользователя по идентификатору
+ */
 function getUserEmail($con, $user_id)
 {
     $sql = 'SELECT email FROM users WHERE id = ?';
@@ -31,7 +42,12 @@ function getUserEmail($con, $user_id)
     return $user_email;
 }
 
-/*функция, отправляющая электронное письмо*/
+/**
+ * функция, отправляющая электронное письмо
+ * @param resource $con ресурс соединения
+ * @param integer $user_id идентификатор пользователя
+ * @param string $message_text текст сообщения
+ */
 function sendMessage($con, $user_id, $message_text)
 {
     $transport = (new Swift_SmtpTransport('phpdemo.ru', 25))
@@ -58,7 +74,7 @@ if (!empty($tasks)) {
             $users_id [] = $user_id;
             $message_text = 'Уважаемый ' . getUserName($con, $user_id) . '. У вас запланирована задача ';
             foreach ($tasks as $val) {
-                if ($val['user_id'] == $user_id) {
+                if ($val['user_id'] === $user_id) {
                     $message_text .= $val['name'] . ' на ' . date('d.m.Y') . ', ';
                 }
             }
